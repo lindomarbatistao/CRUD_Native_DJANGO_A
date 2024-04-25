@@ -47,8 +47,3 @@ class ClientesDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = ClienteSerializer
 
 
-class Teste(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = Cliente.objects.all()
-    serializer_class = ClienteSerializer
-
