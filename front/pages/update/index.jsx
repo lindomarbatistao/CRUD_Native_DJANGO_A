@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { StyleSheet, Text, View, TextInput, Pressable, Alert } from 'react-native';
+import { Text, View, TextInput, Pressable } from 'react-native';
 import styles from './styles';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function UPDATE() {
-
-    // ############# GET ########################
     const [userId, setUserId] = useState(0)
     const [usuario, setUsuario] = useState('')
     const [rua, setRua] = useState('')
@@ -16,32 +15,60 @@ export default function UPDATE() {
     const [email, setEmail] = useState('')
     const [num, setNum] = useState('')
     const [pass, setPassword] = useState('')
+    const [token, setToken] = useState('')
 
-    const get = () => {
-        axios.get('http://127.0.0.1:8000/api/usuario/' + userId)
-            .then((response) => {
-                setUsuario(response.data.nome)
-                setRua(response.data.rua)
-                setBairro(response.data.bairro)
-                setCidade(response.data.cidade)
-                setUF(response.data.uf)
-                setCep(response.data.cep)
-                setEmail(response.data.email)
-                setNum(response.data.numero)
+    useEffect(() => {
+        AsyncStorage.getItem('token')
+            .then((tokenY) => {
+                console.log('token Update: ', tokenY)
+                setToken(tokenY);
             })
+            .catch(error => {
+                console.error('Erro ao recuperar token:', error);
+            });
+    }, []);
+
+    const dados = {
+        'nome': usuario,
+        'rua': rua,
+        'bairro': bairro,
+        'cidade': cidade,
+        'uf': uf,
+        'cep': cep,
+        'email': email,
+        'numero': num
     }
-    const update = () => {
-        axios.put('http://127.0.0.1:8000/api/usuario/'+userId, {
-            'nome': usuario,
-            'rua': rua,
-            'bairro': bairro,
-            'cidade': cidade,
-            'uf': uf,
-            'cep': cep,
-            'email': email,
-            'numero': num
-        }).then((response) => {
-            console.log(response)
+
+    const buscar = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/usuario/' + userId, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setUsuario(response.data.nome)
+            setRua(response.data.rua)
+            setBairro(response.data.bairro)
+            setCidade(response.data.cidade)
+            setUF(response.data.uf)
+            setCep(response.data.cep)
+            setEmail(response.data.email)
+        }
+        catch (erro) {
+            console.error(erro);
+        }
+    }
+
+    const update = async (dados, token) => {
+        console.log("Token UP", token, dados);
+        try {
+            const response = await axios.put('http://127.0.0.1:8000/api/usuario/' + userId, dados, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                
+            });
+            
             setBairro('')
             setCep('')
             setCidade('')
@@ -52,9 +79,9 @@ export default function UPDATE() {
             setUF('')
             setUserId('')
             setUsuario('')
-        }).catch((error) => {
+        } catch (error) {
             console.log(error)
-        })
+        }
     }
 
     return (
@@ -70,7 +97,7 @@ export default function UPDATE() {
             <View>
                 <Pressable
                     style={styles.btn}
-                    onPress={get}
+                    onPress={buscar}
                 >
                     <Text style={{ fontWeight: 'bold' }}>GET</Text>
                 </Pressable>
@@ -147,12 +174,12 @@ export default function UPDATE() {
                     secureTextEntry={true}
                 />
 
-                <View style={{alignItems:'center'}}>
+                <View style={{ alignItems: 'center' }}>
                     <Pressable
                         style={styles.btn}
-                        onPress={update}
+                        onPress={()=> update(dados, token)}
                     >
-                        <Text style={{ fontWeight: 'bold', color:'white' }}>PUT</Text>
+                        <Text style={{ fontWeight: 'bold', color: 'white' }}>PUT</Text>
                     </Pressable>
                 </View>
             </View>
