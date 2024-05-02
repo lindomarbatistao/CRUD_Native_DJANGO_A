@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'api',
     'corsheaders',
     'rest_framework_simplejwt',
-
 ]
 
 REST_FRAMEWORK = {
@@ -48,6 +47,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:19006",
+]
+
+MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware'
 ]
 
