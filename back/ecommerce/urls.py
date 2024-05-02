@@ -7,6 +7,9 @@ from rest_framework_simplejwt.views import (
 )
 from api import views
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
@@ -14,7 +17,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('create_user/', views.create_user, name='create_user'),
-]
+]+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 
 # @lindomar
 # @1234567

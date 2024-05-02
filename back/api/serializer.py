@@ -15,6 +15,7 @@ class ClienteSerializer(serializers.ModelSerializer):
             'cep',
             'email',
             'numero',
+            'image'
         ]
 
 class UserSerializer(serializers.ModelSerializer):
